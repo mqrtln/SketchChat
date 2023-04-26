@@ -1,7 +1,9 @@
 import React from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
-export function Frontpage() {
+
+export function Chat() {
   const [message, setMessage] = useState("");
   const [chatBox, setChatBox] = useState([]);
 
@@ -16,7 +18,10 @@ export function Frontpage() {
 
   return (
     <div>
-      <h1>Hello world!</h1>
+      <h1>Welcome to the chat client</h1>
+      <ul>
+        <li><Link to="/login">Log out</Link></li>
+      </ul>
       <div>
         {chatBox.map((msg, index) => (
           <div key={index}>{msg}</div>
@@ -27,8 +32,7 @@ export function Frontpage() {
           type="text"
           placeholder="Type something.."
           value={message}
-          onChange={handleInputChange}
-        />
+          onChange={handleInputChange} />
         <button onClick={handleMessage}>Send</button>
       </footer>
     </div>
