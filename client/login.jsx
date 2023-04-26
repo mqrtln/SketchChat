@@ -1,14 +1,18 @@
 import { useState } from "react";
-import firebase from "firebase/app";
-import * as auth from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+
+  const navigate = useNavigate();
+
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -20,11 +24,17 @@ export function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
-      await auth.signInWithEmailAndPassword(email, password);
+      const auth = getAuth();
+      setMessage("");
+      signInWithEmailAndPassword(auth, email, password);
       console.log("Login successful");
+       navigate("/chat");
+    setMessage("Login successful"); 
     } catch (error) {
       console.log("Login failed" + error);
+      setMessage("Login failed" + error);
     }
   };
 
@@ -50,6 +60,11 @@ export function Login() {
         <br />
         <button type="submit">Login</button>
       </form>
+        <p
+        style={{
+            color: message.startsWith("Login successful") ? "green" : "red",
+            fontWeight: "bold",
+        }}>{message}</p>
       <ul>
         <li> <Link to="/register">Don't have an account yet?</Link></li>
       </ul>
