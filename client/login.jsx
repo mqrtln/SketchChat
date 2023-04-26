@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export function Login() {
@@ -28,10 +28,22 @@ export function Login() {
     try {
       const auth = getAuth();
       setMessage("");
-      signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful");
-       navigate("/chat");
-    setMessage("Login successful"); 
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            console.log("Login successful");
+            navigate("/chat");
+            setMessage("Login successful"); 
+            // Signed in
+            const user = userCredential.user;
+            // ...
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log("Login failed" + error);
+            setMessage("Login failed" + error);
+        });
+
     } catch (error) {
       console.log("Login failed" + error);
       setMessage("Login failed" + error);

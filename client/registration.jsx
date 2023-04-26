@@ -2,15 +2,15 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "firebaseui";
-import { useHistory } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { LogoutButton } from "./LogoutButton";
 
 
 export function Registration(){
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
-
+    const navigate = useNavigate();
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -32,6 +32,7 @@ export function Registration(){
             setMessage("Registration successful"); 
              // Signed in 
              const user = userCredential.user;
+             navigate("/chat");
              // ...
            })
               .catch((error) => {
@@ -49,6 +50,8 @@ export function Registration(){
 
 
     return (
+        <>
+    <Link to="/">Go back to login</Link>
     <form onSubmit={handleRegistration}>
         <label htmlFor="email">Email: </label>
         <input
@@ -75,5 +78,6 @@ export function Registration(){
         >{message}</p>
         
     </form>
+    </>
     )
 }

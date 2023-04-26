@@ -1,16 +1,31 @@
 import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth";
+import { signOut } from "firebase/auth";
+
 
 
 export function Chat() {
   const [message, setMessage] = useState("");
   const [chatBox, setChatBox] = useState([]);
+  const auth = getAuth(); 
+  const navigate = useNavigate(); 
 
   const handleMessage = () => {
     setChatBox([...chatBox, message]);
     setMessage("");
-  };
+  }; 
+
+  const handleSignOut = async() => {
+    try{
+      await signOut(auth);
+      console.log("Sign out successful");
+      navigate("/");
+    } catch (error){
+      console.log("Sign out failed" + error);
+    }
+  }
 
   const handleInputChange = (event) => {
     setMessage(event.target.value);
@@ -19,9 +34,7 @@ export function Chat() {
   return (
     <div>
       <h1>Welcome to the chat client</h1>
-      <ul>
-        <li><Link to="/login">Log out</Link></li>
-      </ul>
+      <button onClick={handleSignOut}>Log out</button>
       <div>
         {chatBox.map((msg, index) => (
           <div key={index}>{msg}</div>
