@@ -4,79 +4,79 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "firebaseui";
 import { useNavigate, Link } from "react-router-dom";
 
+export function Registration() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-export function Registration(){
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [message, setMessage] = useState("");
-    const navigate = useNavigate();
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
 
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    };
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-    };
+  const handleRegistration = async (event) => {
+    event.preventDefault();
 
+    try {
+      const auth = getAuth();
+      setMessage("");
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("Registration successful");
+          setMessage("Registration successful");
+          // Signed in
+          const user = userCredential.user;
+          navigate("/chat");
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log("Registration failed" + error);
+          setMessage("Registration failed" + error);
 
-    const handleRegistration = async (event) => {
-        event.preventDefault();
-        
-        try{
-            const auth = getAuth(); 
-            setMessage("");
-             createUserWithEmailAndPassword(auth, email, password)
-           .then((userCredential) => {
-            console.log("Registration successful");
-            setMessage("Registration successful"); 
-             // Signed in 
-             const user = userCredential.user;
-             navigate("/chat");
-             // ...
-           })
-              .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log("Registration failed" + error);
-                setMessage("Registration failed" + error);
+          // ..
+        });
+    } catch (error) {
+      console.log("Registration failed" + error);
+    }
+  };
 
-                // ..
-                });
-
-}   catch (error) {
-    console.log("Registration failed" + error);
-}   }   
-
-
-    return (
-        <>
-    <Link to="/">Go back to login</Link>
-    <form onSubmit={handleRegistration}>
+  return (
+    <>
+      <Link to="/">Go back to login</Link>
+      <form onSubmit={handleRegistration}>
         <label htmlFor="email">Email: </label>
         <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={handleEmailChange}
+          type="email"
+          id="email"
+          value={email}
+          onChange={handleEmailChange}
         />
         <br />
         <label htmlFor="password">Password: </label>
         <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={handlePasswordChange}
+          type="password"
+          id="password"
+          value={password}
+          onChange={handlePasswordChange}
         />
         <br />
         <button type="submit">Register</button>
         <p
           style={{
-            color: message.startsWith("Registration successful") ? "green" : "red",
+            color: message.startsWith("Registration successful")
+              ? "green"
+              : "red",
             fontWeight: "bold",
           }}
-        >{message}</p>
-        
-    </form>
+        >
+          {message}
+        </p>
+      </form>
     </>
-    )
+  );
 }

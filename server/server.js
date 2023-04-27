@@ -1,5 +1,5 @@
-import express from 'express';
-import path from 'path';
+import express from "express";
+import path from "path";
 
 const app = express();
 app.use(express.static("../client/dist"));
@@ -10,7 +10,6 @@ app.use((req, res, next) => {
     next();
   }
 });
-
 
 const server = app.listen(5000, () => {
   console.log(`Started on http://localhost:${server.address().port}`);
