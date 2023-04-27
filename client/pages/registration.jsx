@@ -3,7 +3,6 @@ import { useState } from "react";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "firebaseui";
 import { useNavigate, Link } from "react-router-dom";
-import { LogoutButton } from "./LogoutButton";
 
 
 export function Registration(){
