@@ -1,12 +1,12 @@
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, getAdditionalUserInfo, updateProfile } from "firebase/auth";
 import { useState } from "react";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "firebaseui";
 import { useNavigate, Link } from "react-router-dom";
 
 export function Registration() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
@@ -15,6 +15,10 @@ export function Registration() {
   };
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
+  };
+
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
   };
 
   const handleRegistration = async (event) => {
@@ -28,7 +32,19 @@ export function Registration() {
           console.log("Registration successful");
           setMessage("Registration successful");
           // Signed in
-          const user = userCredential.user;
+          updateProfile(auth.currentUser, {
+            displayName: username,
+          }).then(() => {
+            // Profile updated!
+            console.log("Profile updated");
+            // ...
+          })
+          .catch((error) => {
+            // An error occurred
+            console.log("Profile update failed" + error);
+            // ...  
+          });
+
           navigate("/chat");
           // ...
         })
@@ -49,6 +65,15 @@ export function Registration() {
     <>
       <Link to="/">Go back to login</Link>
       <form onSubmit={handleRegistration}>
+        <label htmlFor="username">Username: </label>
+        <input
+          type="text"
+          id="username"
+          value={username}
+          onChange={handleUsernameChange}
+        />
+        <br />
+      
         <label htmlFor="email">Email: </label>
         <input
           type="email"
