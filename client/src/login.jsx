@@ -32,7 +32,9 @@ export function Login() {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           console.log("Login successful");
-          navigate("/chat");
+          setTimeout(() => {
+            navigate("/chat");
+          }, 2000);
           setMessage("Login successful");
           // Signed in
           const user = userCredential.user;

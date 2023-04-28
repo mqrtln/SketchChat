@@ -45,7 +45,9 @@ export function Registration() {
             // ...  
           });
 
-          navigate("/chat");
+          setTimeout(() => {
+            navigate("/chat");
+          }, 2000);
           // ...
         })
         .catch((error) => {

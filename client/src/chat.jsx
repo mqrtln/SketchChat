@@ -11,6 +11,8 @@ export function Chat() {
   const [chatBox, setChatBox] = useState([]);
   const [displayName, setDisplayName] = useState("");
   const [color, setColor] = useState("");
+  const [displayNameSet, setDisplayNameSet] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const auth = getAuth();
   const navigate = useNavigate();
@@ -22,12 +24,17 @@ export function Chat() {
     if (user !== null) {
       if (user.displayName) {
         setDisplayName(user.displayName);
+        console.log("Display name is " + user.displayName);
+        setLoggedIn(true);
       } else {
         setDisplayName('Anonymous');
+        console.log("Display name is " + user.displayName);
+        setLoggedIn(true);
       }
       setColor(getRandomColor());
+      setDisplayNameSet(true);
     }
-  }, [auth]);
+  }, []);
 
   const handleMessage = () => {
     const messageRef = ref(database, "messages/");
@@ -38,6 +45,7 @@ export function Chat() {
 
   const handleSignOut = async () => {
     try {
+      setLoggedIn(false);
       await signOut(auth);
       console.log("Sign out successful");
       navigate("/");
@@ -67,53 +75,58 @@ export function Chat() {
     });
   }, [database]);
 
-  useEffect(() =>{
-    chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-  }, [chatBox]);
+
   
   return (
-    <div className="chat-container">
-      <div className="navbar">
-        <h1>Welcome to the chat client</h1>
-        <h4>
-          Logged in as:{" "}
-          <span style={{ fontWeight: "bold", color: color, marginRight: "10px", textShadow: "0.5px 0.5px 0.5px #000"  }}>{displayName}</span>
-          <button className="logout-button" onClick={handleSignOut}>Log out</button>
-        </h4>
-      </div>
-    
-      <div className="chat-box" ref={chatBoxRef}>
-        {chatBox.map((msg, index) => (
-          <div key={index} className="message">
-          <span style={{ fontWeight: "bold", color: msg.color, textShadow: "0.5px 0.5px 0.5px #000" }}>
-            {msg.displayName}:
-          </span>
-          <span style={{ color: "#000" }}>
-            {msg.message}
-          </span>
+    <>
+      {displayNameSet && (
+        <div className="chat-container">
+          <div className="navbar">
+            <h1>Welcome to the chat client</h1>
+            <h4>
+              Logged in as:{" "}
+              <span style={{ fontWeight: "bold", color: color, marginRight: "10px", textShadow: "0.5px 0.5px 0.5px #000" }}>{displayName}</span>
+              <button className="logout-button" onClick={handleSignOut}>Log out</button>
+            </h4>
+          </div>
+        
+          <div className="chat-box" ref={chatBoxRef}>
+            {loggedIn && (
+              <div className="message">
+                <span style={{fontStyle: "italic" }}>
+                  {displayName} has logged in
+                </span>
+              </div>
+            )}
+            {chatBox.map((msg, index) => (
+              <div key={index} className="message">
+                <span style={{ fontWeight: "bold", color: msg.color, textShadow: "0.5px 0.5px 0.5px #000" }}>
+                  {msg.displayName}:
+                </span>
+                <span style={{ color: "#000" }}>
+                  {msg.message}
+                </span>
+              </div>
+            ))}
+          </div>
+        
+          <footer className="input-container">
+            <input
+              className="chat-input"
+              type="text"
+              placeholder="Type something.."
+              value={message}
+              onChange={handleInputChange}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleMessage();
+                }
+              }}
+            />
+            <button className="send-button" onClick={handleMessage}>Send</button>
+          </footer>
         </div>
-        ))}
-      </div>
-    
-      <footer className="input-container">
-        <input
-          className="chat-input"
-          type="text"
-          placeholder="Type something.."
-          value={message}
-          onChange={handleInputChange}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              handleMessage();
-            }
-          }}
-        />
-        <button className="send-button" onClick={handleMessage}>Send</button>
-      </footer>
-    </div>
+      )}
+    </>
   );
-  
-  
-  
-  
 }
