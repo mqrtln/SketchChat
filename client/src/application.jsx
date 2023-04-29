@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import { Chat } from "./chat";
 import { Login } from "./login";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ProtectedRoute } from "./components/protectedRoute";
 import { Registration } from "./registration";
 
 export function Application() {

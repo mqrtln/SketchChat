@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue, push } from "firebase/database";
 import { signOut } from "firebase/auth";
+import { getRandomColor } from "./components/getRandomColor";
 import './styles/Chat.css'
 
 export function Chat() {
@@ -12,29 +13,14 @@ export function Chat() {
   const [displayName, setDisplayName] = useState("");
   const [color, setColor] = useState("");
   const [displayNameSet, setDisplayNameSet] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
+
 
   const auth = getAuth();
   const navigate = useNavigate();
   const chatBoxRef = useRef(null);
   const database = getDatabase();
+  const randomColor = getRandomColor();
 
-  useEffect(() => {
-    const user = auth.currentUser;
-    if (user !== null) {
-      if (user.displayName) {
-        setDisplayName(user.displayName);
-        console.log("Display name is " + user.displayName);
-        setLoggedIn(true);
-      } else {
-        setDisplayName('Anonymous');
-        console.log("Display name is " + user.displayName);
-        setLoggedIn(true);
-      }
-      setColor(getRandomColor());
-      setDisplayNameSet(true);
-    }
-  }, []);
 
   const handleMessage = () => {
     const messageRef = ref(database, "messages/");
@@ -45,7 +31,6 @@ export function Chat() {
 
   const handleSignOut = async () => {
     try {
-      setLoggedIn(false);
       await signOut(auth);
       console.log("Sign out successful");
       navigate("/");
@@ -58,11 +43,24 @@ export function Chat() {
     setMessage(event.target.value);
   };
 
-  const getRandomColor = () => {
-    const colors = ["red", "blue", "green", "orange", "purple", "pink"];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
 
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user !== null) {
+      if (user.displayName) {
+        setDisplayName(user.displayName);
+        console.log("Display name is " + user.displayName);
+      } else {
+        setDisplayName('Anonymous');
+        console.log("Display name is " + user.displayName);
+      }
+      setColor(randomColor);
+      setDisplayNameSet(true);
+    }
+  }, []);
+
+
+  
 
 
   useEffect(() => {
@@ -74,7 +72,6 @@ export function Chat() {
       }
     });
   }, [database]);
-
 
   
   return (
@@ -91,13 +88,6 @@ export function Chat() {
           </div>
         
           <div className="chat-box" ref={chatBoxRef}>
-            {loggedIn && (
-              <div className="message">
-                <span style={{fontStyle: "italic" }}>
-                  {displayName} has logged in
-                </span>
-              </div>
-            )}
             {chatBox.map((msg, index) => (
               <div key={index} className="message">
                 <span style={{ fontWeight: "bold", color: msg.color, textShadow: "0.5px 0.5px 0.5px #000" }}>

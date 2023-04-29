@@ -7,6 +7,8 @@ import {
 import "firebase/firestore";
 import "firebase/storage";
 import { Link, useNavigate } from "react-router-dom";
+import { handleEmailChange, handlePasswordChange } from "./components/handler";
+
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -18,10 +20,10 @@ export function Login() {
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
-
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();

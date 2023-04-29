@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import WebSocket, { WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 
 const app = express();
 app.use(express.static("../client/dist"));
