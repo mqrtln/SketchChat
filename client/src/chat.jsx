@@ -13,8 +13,7 @@ export function Chat() {
   const [displayName, setDisplayName] = useState("");
   const [color, setColor] = useState("");
   const [displayNameSet, setDisplayNameSet] = useState(false);
-
-
+  const [userUid, setUserUid] = useState("");
   const auth = getAuth();
   const navigate = useNavigate();
   const chatBoxRef = useRef(null);
@@ -31,7 +30,7 @@ export function Chat() {
       socket.close();
     });
     const messageRef = ref(database, "messages/");
-    push(messageRef, {message, displayName, color});
+    push(messageRef, {message, displayName, color, userUid});
     setMessage("");
   };
 
@@ -56,6 +55,7 @@ export function Chat() {
     if (user !== null) {
       if (user.displayName) {
         setDisplayName(user.displayName);
+        setUserUid(user.uid);
         console.log("Display name is " + user.displayName);
       } else {
         setDisplayName('Anonymous');
@@ -86,8 +86,8 @@ export function Chat() {
     useEffect(() => {
       const messageRef = ref(database, "messages/");
       onChildAdded(messageRef, (snapshot) => {
-    const message = snapshot.val();
-    setChatBox((prevChatBox) => [...prevChatBox, { ...message, key: snapshot.key }]);
+      const message = snapshot.val();
+      setChatBox((prevChatBox) => [...prevChatBox, { ...message, key: snapshot.key }]);
       });
     }, []);
 
