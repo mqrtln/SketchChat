@@ -19,6 +19,7 @@ export function Chat() {
   const chatBoxRef = useRef(null);
   const database = getDatabase();
   const randomColor = getRandomColor();
+  let time = new Date().toLocaleTimeString();
 
 
   const handleMessage = () => {
@@ -30,7 +31,7 @@ export function Chat() {
       socket.close();
     });
     const messageRef = ref(database, "messages/");
-    push(messageRef, {message, displayName, color, userUid});
+    push(messageRef, {message, displayName, color, userUid, time});
     setMessage("");
   };
 
@@ -85,10 +86,17 @@ export function Chat() {
     // Fetch messages from database when component mounts
     useEffect(() => {
       const messageRef = ref(database, "messages/");
-      onChildAdded(messageRef, (snapshot) => {
-      const message = snapshot.val();
-      setChatBox((prevChatBox) => [...prevChatBox, { ...message, key: snapshot.key }]);
-      });
+      get(messageRef).then((snapshot) => {
+        const messages = snapshot.val();
+        const uniqueMessages = [];
+        for (let id in messages) {
+          const message = messages[id];
+          if(!uniqueMessages.some((m) => m.userUid === message.userUid && m.message === message.message && m.time === message.time)) {
+            uniqueMessages.push({...message, id});
+            }
+            }
+            setChatBox(uniqueMessages);
+            });
     }, []);
 
 
