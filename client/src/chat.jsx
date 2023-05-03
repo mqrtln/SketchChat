@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, onValue, push } from "firebase/database";
+import { getDatabase, ref, onValue, push, onChildAdded, get } from "firebase/database";
 import { signOut } from "firebase/auth";
 import { getRandomColor } from "./components/getRandomColor";
 import './styles/Chat.css'
@@ -23,9 +23,15 @@ export function Chat() {
 
 
   const handleMessage = () => {
+    const messageData = { message, displayName, color };
+    const socketMessage = JSON.stringify(messageData);
+    const socket = new WebSocket("ws://localhost:5000");
+    socket.addEventListener("open", () => {
+      socket.send(socketMessage);
+      socket.close();
+    });
     const messageRef = ref(database, "messages/");
     push(messageRef, {message, displayName, color});
-    setChatBox([...chatBox, { message, displayName, color }]);
     setMessage("");
   };
 
@@ -44,6 +50,7 @@ export function Chat() {
   };
 
 
+  // Sets the display name and color
   useEffect(() => {
     const user = auth.currentUser;
     if (user !== null) {
@@ -59,21 +66,32 @@ export function Chat() {
     }
   }, []);
 
-
-  
-
-
+  // Setting up websocket
   useEffect(() => {
-    const messageRef = ref(database, "messages/");
-    onValue(messageRef, (snapshot) => {
-      const messages = snapshot.val();
-      if (messages) {
-        setChatBox(Object.values(messages));
-      }
+    const socket = new WebSocket("ws://localhost:5000");
+    socket.addEventListener("open", () => {
+      console.log("Connected to websocket");
     });
-  }, [database]);
 
-  
+    socket.addEventListener("message", (event) => {
+      const data = JSON.parse(event.data);
+      setChatBox((prevChatBox) => [...prevChatBox, data]);
+    });
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+    // Fetch messages from database when component mounts
+    useEffect(() => {
+      const messageRef = ref(database, "messages/");
+      onChildAdded(messageRef, (snapshot) => {
+    const message = snapshot.val();
+    setChatBox((prevChatBox) => [...prevChatBox, { ...message, key: snapshot.key }]);
+      });
+    }, []);
+
+
   return (
     <>
       {displayNameSet && (

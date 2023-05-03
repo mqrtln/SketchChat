@@ -22,15 +22,28 @@ wsServer.on("connect", (socket) => {
   sockets.push(socket);
   console.log("ws connected");
   socket.send(
-    JSON.stringify({ author: "SERVER", message: "Type anything you want!" })
+    JSON.stringify({ 
+      displayName: 'SERVER',
+      message: 'Type anything you want!',
+      color: '#000000',
+    })
   );
 
   socket.on("message", (data) => {
-    const { author, message } = JSON.parse(data);
+    const {message, displayName, color } = JSON.parse(data);
+    const messageData = { message, displayName, color };
     for (const recipient of sockets) {
-      recipient.send(JSON.stringify({ author, message }));
+      recipient.send(JSON.stringify(messageData));
     }
+  })
+
+
+  socket.on("close", () => {
+    sockets.splice(sockets.indexOf(socket), 1);
+    console.log("ws disconnected");
   });
+  
+
 });
 
 
