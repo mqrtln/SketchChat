@@ -91,7 +91,7 @@ export function Chat() {
         const uniqueMessages = [];
         for (let id in messages) {
           const message = messages[id];
-          if(!uniqueMessages.some((m) => m.userUid === message.userUid && m.message === message.message && m.time === message.time)) {
+          if(!uniqueMessages.some((m) => m.userUid === message.userUid && m.message === message.message)) {
             uniqueMessages.push({...message, id});
             }
             }
