@@ -32,6 +32,7 @@ export function Chat() {
     });
     const messageRef = ref(database, "messages/");
     push(messageRef, {message, displayName, color, userUid, time});
+    console.log(`Message sent: ${message}, with color ${color}, from ${displayName} at ${time} with userUid ${userUid}`)
     setMessage("");
   };
 
@@ -91,7 +92,7 @@ export function Chat() {
         const uniqueMessages = [];
         for (let id in messages) {
           const message = messages[id];
-          if(!uniqueMessages.some((m) => m.userUid === message.userUid && m.message === message.message)) {
+          if(!uniqueMessages.some((m) => m.userUid === message.userUid && m.time === message.time )) {
             uniqueMessages.push({...message, id});
             }
             }
@@ -99,6 +100,11 @@ export function Chat() {
             });
     }, []);
 
+    // Scroll to bottom of chatbox when new message is added
+    // useEffect(() =>{
+    //   chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    // }, [chatBox]);
+    
 
   return (
     <>
