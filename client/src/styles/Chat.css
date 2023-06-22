@@ -84,4 +84,5 @@ body, html {
   
   .send-button {
     flex-shrink: 0;
+    background-color: aqua;
   }
